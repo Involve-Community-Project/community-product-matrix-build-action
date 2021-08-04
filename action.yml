@@ -1,11 +1,15 @@
-name: 'Your name here'
-description: 'Provide a description here'
-author: 'Your name or organization here'
+name: 'community-product-matrix-build-action'
+description: 'Action to help run client deployments in parallel'
+author: 'Austin Dimmer - Involvesoft'
 inputs:
-  milliseconds: # change this
+  templateMatchPattern:
     required: true
+    description: 'Match pattern used to find CloudFormation Templates to include in the build matrix'
+    default: '@(InfraStack)'
+  milliseconds: # change this
+    required: false
     description: 'input description here'
-    default: 'default value if applicable'
+    default: '100'
 runs:
   using: 'node12'
   main: 'dist/index.js'
