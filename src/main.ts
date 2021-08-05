@@ -1,31 +1,39 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import * as core from '@actions/core'
-import * as github from '@actions/github';
+import * as github from '@actions/github'
 import {wait} from './wait'
-import { env } from 'process';
-const path = require('path')
-var glob = require("glob")
-
-import { setFailed, info } from "@actions/core";
-
+import {env} from 'process'
+import {setFailed, info} from '@actions/core'
+import path from 'path'
+import glob from 'glob'
 export interface Logger {
-  setFailed: (msg: any) => void;
-  info: (msg: any) => void;
+  setFailed: (msg: any) => void
+  info: (msg: any) => void
 }
 
 async function run(logger: Logger): Promise<void> {
   try {
-    logger.info("Github Workspace path is: " + env.GITHUB_WORKSPACE!)
-    logger.info("Production Stage is: " + env.PRODUCTION_STAGE!)
-    const cloudFormationTemplatesPath:string = path.join(env.GITHUB_WORKSPACE!, '/cdk.out/');
+    logger.info(`Github Workspace path is: ${env.GITHUB_WORKSPACE!}`)
+    logger.info(`Production Stage is: ${env.PRODUCTION_STAGE!}`)
+    const cloudFormationTemplatesPath: string = path.join(
+      env.GITHUB_WORKSPACE!,
+      '/cdk.out/'
+    )
     const patternToMatch: string = core.getInput('templateMatchPattern')
 
-    var pattern = "@(" + env.PRODUCTION_STAGE! + "*InfraStack.template.json)"
-    logger.info("Match Pattern is: " + pattern)
+    const pattern = `@(${env.PRODUCTION_STAGE!}*InfraStack.template.json)`
+    logger.info(`Match Pattern is: ${pattern}`)
     let filesToReturn: string[] = []
-    glob.Glob(cloudFormationTemplatesPath + pattern, {}, (err:any, files:any)=>{
-      logger.info(files)
-      filesToReturn = files
-    })
+    new glob.Glob(
+      cloudFormationTemplatesPath + pattern,
+      {},
+      (err: any, files: any) => {
+        logger.info(files)
+        filesToReturn = files
+      }
+    )
     core.setOutput('matrix', filesToReturn)
 
     const ms: string = core.getInput('milliseconds')
@@ -41,4 +49,4 @@ async function run(logger: Logger): Promise<void> {
   }
 }
 
-run({ setFailed, info })
+run({setFailed, info})
