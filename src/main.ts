@@ -6,7 +6,6 @@ const path = require('path')
 var glob = require("glob")
 
 import { setFailed, info } from "@actions/core";
-import AWS from "aws-sdk";
 
 export interface Logger {
   setFailed: (msg: any) => void;
