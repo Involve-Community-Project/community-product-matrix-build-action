@@ -1,0 +1,22 @@
+{
+    "deepscan.enable": true,
+    "files.associations": {
+        "*.json": "jsonc"
+    },    
+    "files.exclude": {
+        "**/.git": true,
+        "**/node_modules": true,
+        "**/.DS_Store": true,
+        // "**/*.js": {
+        //     "when": "$(basename).ts"
+        // }, 
+        // "**/*.d.ts": {
+        //     "when": "$(basename).ts"
+        // }
+    },
+    "editor.codeActionsOnSave": {
+        "source.fixAll.markdownlint": true,
+        "source.fixAll.eslint": true 
+    },
+    "editor.defaultFormatter": "dbaeumer.vscode-eslint",
+}
