@@ -9,6 +9,7 @@ import {setFailed, info} from '@actions/core'
 import path from 'path'
 import glob from 'glob'
 import {countReset} from 'console'
+
 export interface Logger {
   setFailed: (msg: any) => void
   info: (msg: any) => void
@@ -18,10 +19,23 @@ async function run(logger: Logger): Promise<void> {
   try {
     logger.info(`Github Workspace path is: ${env.GITHUB_WORKSPACE!}`)
     logger.info(`Production Stage is: ${env.PRODUCTION_STAGE!}`)
-    const cloudFormationTemplatesPath: string = path.join(
-      env.GITHUB_WORKSPACE!,
-      '/cdk.out/'
-    )
+    logger.info(`CDK App/Service Root is: ${env.CDK_APP_ROOT_PATH!}`)
+
+    let cloudFormationTemplatesPath: string = '';
+    if(env.CDK_APP_ROOT_PATH!?.length > 0) {
+      cloudFormationTemplatesPath = path.join(
+        env.GITHUB_WORKSPACE!, env.CDK_APP_ROOT_PATH!,
+        '/cdk.out/'
+      )
+    }
+    else{
+      cloudFormationTemplatesPath = path.join(
+        env.GITHUB_WORKSPACE!,
+        '/cdk.out/'
+      )
+    }
+    logger.info('Cloudformation Templates Path for App/Service evaluates to: ' + cloudFormationTemplatesPath)
+    
     const patternToMatch: string = core.getInput('templateMatchPattern')
 
     const pattern = `@(${env.PRODUCTION_STAGE!}*InfraStack.template.json)`
@@ -31,9 +45,22 @@ async function run(logger: Logger): Promise<void> {
       cloudFormationTemplatesPath + pattern,
       {},
       (err: any, files: any) => {
-        logger.info(files)
-        filesToReturn = files.map((str: any, index: number) => ({
-          fileName: str,
+        const templateNames: string[] = []
+        // eslint-disable-next-line github/array-foreach
+        files.forEach((file: any) => {
+          const filename = file
+          // strip .json extension
+          const currentTemplateName = path.parse(filename).name
+          // strip .template extension
+          const currentName = path.parse(currentTemplateName).name
+          path.parse(filename).ext
+          path.parse(filename).base
+          templateNames.push(currentName)
+        })
+
+        logger.info(templateNames)
+        filesToReturn = templateNames.map((str: any, index: number) => ({
+          templateName: str,
           id: index + 1
         }))
 
